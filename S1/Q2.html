@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Student Registration Form</h2>
+
+  <form onsubmit="return validateStudentForm()">
+    <label>First Name:</label><br>
+    <input type="text" id="firstName"><br>
+    <span id="firstNameError" class="error"></span><br>
+
+    <label>Last Name:</label><br>
+    <input type="text" id="lastName"><br>
+    <span id="lastNameError" class="error"></span><br>
+
+    <label>Age:</label><br>
+    <input type="number" id="age"><br>
+    <span id="ageError" class="error"></span><br><br>
+
+    <input type="submit" value="Register">
+  </form>
+
+  <script>
+    function validateStudentForm() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const age = parseInt(document.getElementById('age').value);
+
+      const firstNameError = document.getElementById('firstNameError');
+      const lastNameError = document.getElementById('lastNameError');
+      const ageError = document.getElementById('ageError');
+
+      let isValid = true;
+
+      // Regex: only alphabets
+      const nameRegex = /^[A-Za-z]+$/;
+
+      // Clear previous errors
+      firstNameError.textContent = "";
+      lastNameError.textContent = "";
+      ageError.textContent = "";
+
+      // Validate first name
+      if (!nameRegex.test(firstName)) {
+        firstNameError.textContent = "First name should contain only alphabets.";
+        isValid = false;
+      }
+
+      // Validate last name
+      if (!nameRegex.test(lastName)) {
+        lastNameError.textContent = "Last name should contain only alphabets.";
+        isValid = false;
+      }
+
+      // Validate age
+      if (isNaN(age) || age < 18 || age > 50) {
+        ageError.textContent = "Age must be between 18 and 50.";
+        isValid = false;
+      }
+
+      return isValid;
+    }
+  </script>
+
+</body>
+</html>

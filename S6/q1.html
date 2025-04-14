@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AngularJS ng-click Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+
+  <!-- Button with ng-click directive -->
+  <button ng-click="showAlert()">Click Me</button>
+
+  <script>
+    // Define the AngularJS application
+    var app = angular.module('myApp', []);
+
+    // Controller definition
+    app.controller('myController', function($scope) {
+      // Function to show alert
+      $scope.showAlert = function() {
+        alert('Hello! You clicked the button!');
+      };
+    });
+  </script>
+
+</body>
+</html>

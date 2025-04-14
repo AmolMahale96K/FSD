@@ -1,0 +1,26 @@
+<div style="text-align:center; margin-top: 20px;">
+    <h1>Current Date and Time:</h1>
+    <p>{{ currentDateTime }}</p>
+  </div>
+
+  
+
+  import { Component, OnInit } from '@angular/core';
+import { interval } from 'rxjs';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements OnInit {
+  currentDateTime: string = '';
+
+  ngOnInit() {
+    // Update the current date and time every second
+    interval(1000).subscribe(() => {
+      const now = new Date();
+      this.currentDateTime = now.toLocaleString(); // Format it in a readable way
+    });
+  }
+}

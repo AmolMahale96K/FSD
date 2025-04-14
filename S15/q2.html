@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Registration Form</title>
+  <script>
+    // Function to validate the form fields using Regular Expressions
+    function validateForm() {
+      // Get the input values
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const mobile = document.getElementById('mobile').value;
+      const department = document.getElementById('department').value;
+      const joiningDate = document.getElementById('joiningDate').value;
+
+      // Regular Expression for Name: Only alphabets and spaces allowed
+      const nameRegex = /^[A-Za-z\s]+$/;
+      if (!nameRegex.test(name)) {
+        alert('Name should only contain alphabets and spaces.');
+        return false;
+      }
+
+      // Regular Expression for Email: Valid email format
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return false;
+      }
+
+      // Regular Expression for Mobile: Should be a 10-digit number
+      const mobileRegex = /^[0-9]{10}$/;
+      if (!mobileRegex.test(mobile)) {
+        alert('Mobile number should be a 10-digit number.');
+        return false;
+      }
+
+      // Department should not be empty
+      if (department === "") {
+        alert('Please select a department.');
+        return false;
+      }
+
+      // Joining Date should not be in the future
+      const currentDate = new Date();
+      const joinDate = new Date(joiningDate);
+      if (joinDate > currentDate) {
+        alert('Joining date should not be in the future.');
+        return false;
+      }
+
+      // If all validations pass, allow form submission
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <h2>Employee Registration Form</h2>
+  <form onsubmit="return validateForm()">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="email">Email ID:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="mobile">Mobile Number:</label>
+    <input type="text" id="mobile" name="mobile" required><br><br>
+
+    <label for="department">Department:</label>
+    <select id="department" name="department" required>
+      <option value="">Select Department</option>
+      <option value="HR">HR</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Sales">Sales</option>
+      <option value="Marketing">Marketing</option>
+    </select><br><br>
+
+    <label for="joiningDate">Joining Date:</label>
+    <input type="date" id="joiningDate" name="joiningDate" required><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

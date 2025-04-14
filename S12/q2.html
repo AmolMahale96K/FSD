@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Feedback Form</title>
+  <script>
+    function validateForm() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const mobile = document.getElementById('mobile').value;
+      const feedback = document.getElementById('feedback').value;
+
+      // Regular Expressions for Validation
+      const nameRegex = /^[a-zA-Z\s]+$/; // Only letters and spaces
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/; // Valid email format
+      const mobileRegex = /^[0-9]{10}$/; // Valid 10-digit phone number
+
+      // Name validation
+      if (!name || !nameRegex.test(name)) {
+        alert('Please enter a valid name (only letters and spaces).');
+        return false;
+      }
+
+      // Email validation
+      if (!email || !emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return false;
+      }
+
+      // Mobile number validation
+      if (!mobile || !mobileRegex.test(mobile)) {
+        alert('Please enter a valid 10-digit mobile number.');
+        return false;
+      }
+
+      // Feedback selection validation
+      if (!feedback) {
+        alert('Please select a feedback option.');
+        return false;
+      }
+
+      // All fields are valid
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <h2>Student Feedback Form</h2>
+  <form onsubmit="return validateForm()">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="email">Email ID:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="mobile">Mobile No.:</label>
+    <input type="text" id="mobile" name="mobile" required><br><br>
+
+    <label for="feedback">Feedback:</label>
+    <select id="feedback" name="feedback" required>
+      <option value="">Select Feedback</option>
+      <option value="Not good">Not good</option>
+      <option value="Good">Good</option>
+      <option value="Very good">Very good</option>
+      <option value="Excellent">Excellent</option>
+    </select><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

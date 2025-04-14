@@ -1,0 +1,76 @@
+<div class="container">
+    <h2>Student Registration Form</h2>
+  
+    <!-- Greeting Message -->
+    <div *ngIf="greeting">
+      <h3>{{ greeting }}</h3>
+    </div>
+  
+    <!-- Registration Form -->
+    <form #studentForm="ngForm" (ngSubmit)="registerStudent()" novalidate>
+  
+      <label>First Name:</label><br />
+      <input type="text" name="fname" [(ngModel)]="student.fname" required pattern="^[a-zA-Z]+$" #fname="ngModel" />
+      <div *ngIf="fname.invalid && fname.touched">
+        <small class="text-danger">First name must contain only alphabets.</small>
+      </div><br />
+  
+      <label>Last Name:</label><br />
+      <input type="text" name="lname" [(ngModel)]="student.lname" required pattern="^[a-zA-Z]+$" #lname="ngModel" />
+      <div *ngIf="lname.invalid && lname.touched">
+        <small class="text-danger">Last name must contain only alphabets.</small>
+      </div><br />
+  
+      <label>Age:</label><br />
+      <input type="number" name="age" [(ngModel)]="student.age" required min="18" max="50" #age="ngModel" />
+      <div *ngIf="age.invalid && age.touched">
+        <small class="text-danger">Age must be between 18 and 50.</small>
+      </div><br />
+  
+      <button type="submit" [disabled]="studentForm.invalid">Register</button>
+    </form>
+  
+    <div *ngIf="responseMessage">
+      <h4>{{ responseMessage }}</h4>
+    </div>
+  </div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-student-registration',
+  templateUrl: './student-registration.component.html',
+  styleUrls: ['./student-registration.component.css']
+})
+export class StudentRegistrationComponent implements OnInit {
+  student = {
+    fname: '',
+    lname: '',
+    age: null
+  };
+
+  greeting: string = '';
+  responseMessage: string = '';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    const hour = new Date().getHours();
+    if (hour < 12) this.greeting = "Good Morning!";
+    else if (hour < 17) this.greeting = "Good Afternoon!";
+    else this.greeting = "Good Evening!";
+  }
+
+  registerStudent() {
+    this.http.post('https://jsonplaceholder.typicode.com/posts', this.student)
+      .subscribe({
+        next: () => this.responseMessage = "Student Registered Successfully!",
+        error: () => this.responseMessage = "Something went wrong!"
+      });
+  }
+}
+
+  
