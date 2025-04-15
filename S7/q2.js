@@ -1,39 +1,23 @@
-// Import the EventEmitter class from the 'events' module
 const EventEmitter = require('events');
 
-// Create an instance of EventEmitter
+// Create an event emitter instance
 const eventEmitter = new EventEmitter();
 
-// Event listener for 'start' event
-eventEmitter.on('start', () => {
-  console.log('The event loop has started!');
+// Define a callback function for the "greet" event
+eventEmitter.on('greet', (name) => {
+    console.log(Hello, ${name}! Welcome to the event-driven application.);
 });
 
-// Event listener for 'process' event
-eventEmitter.on('process', (data) => {
-  console.log('Processing data: ', data);
+// Define a callback function for the "exit" event
+eventEmitter.on('exit', () => {
+    console.log('Goodbye! Exiting the application.');
+    process.exit(); // Terminates the application
 });
 
-// Event listener for 'end' event
-eventEmitter.on('end', () => {
-  console.log('The event loop has ended!');
-});
+// Simulate event triggering in a loop
+console.log("Application is running...");
 
-// Main event loop
-function eventLoop() {
-  // Trigger the 'start' event
-  eventEmitter.emit('start');
-
-  // Simulate some processing with the 'process' event
-  setTimeout(() => {
-    eventEmitter.emit('process', { task: 'Task 1', status: 'In Progress' });
-
-    // After some processing, trigger the 'end' event
-    setTimeout(() => {
-      eventEmitter.emit('end');
-    }, 2000); // 2 seconds delay before 'end' event
-  }, 1000); // 1 second delay before 'process' event
-}
-
-// Call the main event loop
-eventLoop();
+// Simulate events occurring at different intervals
+setTimeout(() => eventEmitter.emit('greet', 'Alice'), 2000); // After 2 seconds
+setTimeout(() => eventEmitter.emit('greet', 'Bob'), 4000);   // After 4 seconds
+setTimeout(() => eventEmitter.emit('exit'), 6000);          // After 6 seconds
