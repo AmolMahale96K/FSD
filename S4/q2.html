@@ -1,76 +1,66 @@
-<div class="container">
-    <h2>Student Registration Form</h2>
-  
-    <!-- Greeting Message -->
-    <div *ngIf="greeting">
-      <h3>{{ greeting }}</h3>
-    </div>
-  
-    <!-- Registration Form -->
-    <form #studentForm="ngForm" (ngSubmit)="registerStudent()" novalidate>
-  
-      <label>First Name:</label><br />
-      <input type="text" name="fname" [(ngModel)]="student.fname" required pattern="^[a-zA-Z]+$" #fname="ngModel" />
-      <div *ngIf="fname.invalid && fname.touched">
-        <small class="text-danger">First name must contain only alphabets.</small>
-      </div><br />
-  
-      <label>Last Name:</label><br />
-      <input type="text" name="lname" [(ngModel)]="student.lname" required pattern="^[a-zA-Z]+$" #lname="ngModel" />
-      <div *ngIf="lname.invalid && lname.touched">
-        <small class="text-danger">Last name must contain only alphabets.</small>
-      </div><br />
-  
-      <label>Age:</label><br />
-      <input type="number" name="age" [(ngModel)]="student.age" required min="18" max="50" #age="ngModel" />
-      <div *ngIf="age.invalid && age.touched">
-        <small class="text-danger">Age must be between 18 and 50.</small>
-      </div><br />
-  
-      <button type="submit" [disabled]="studentForm.invalid">Register</button>
-    </form>
-  
-    <div *ngIf="responseMessage">
-      <h4>{{ responseMessage }}</h4>
-    </div>
+<!DOCTYPE html>
+<html lang="en" ng-app="studentApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Registration</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .error { color: red; }
+  </style>
+</head>
+<body ng-controller="studentController">
+
+  <h1>Student Registration</h1>
+
+  <!-- Greeting -->
+  <h2 ng-show="greeting">{{ greeting }}</h2>
+
+  <!-- Form -->
+  <form name="regForm" novalidate>
+    First Name:
+    <input type="text" name="fname" ng-model="student.fname" ng-pattern="/^[a-zA-Z]+$/" required>
+    <span class="error" ng-show="regForm.fname.$dirty && regForm.fname.$invalid">Alphabets only</span><br><br>
+
+    Last Name:
+    <input type="text" name="lname" ng-model="student.lname" ng-pattern="/^[a-zA-Z]+$/" required>
+    <span class="error" ng-show="regForm.lname.$dirty && regForm.lname.$invalid">Alphabets only</span><br><br>
+
+    Age:
+    <input type="number" name="age" ng-model="student.age" min="18" max="50" required>
+    <span class="error" ng-show="regForm.age.$dirty && regForm.age.$invalid">Age must be 18–50</span><br><br>
+
+    <button type="button" ng-click="submit()" ng-disabled="regForm.$invalid">Submit</button>
+  </form>
+
+  <!-- Success Message -->
+  <div ng-show="submitted">
+    <h3>Registration Successful!</h3>
+    <p>Name: {{ student.fname }} {{ student.lname }}</p>
+    <p>Age: {{ student.age }}</p>
   </div>
 
+  <script>
+    angular.module('studentApp', [])
+      .controller('studentController', function($scope, $http) {
+        // Greeting message
+        const hour = new Date().getHours();
+        $scope.greeting = hour < 12 ? "Good Morning!" : hour < 18 ? "Good Afternoon!" : "Good Evening!";
 
+        // Submit form
+        $scope.submit = function() {
+          if ($scope.regForm.$valid) {
+            $scope.submitted = true;
 
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
-@Component({
-  selector: 'app-student-registration',
-  templateUrl: './student-registration.component.html',
-  styleUrls: ['./student-registration.component.css']
-})
-export class StudentRegistrationComponent implements OnInit {
-  student = {
-    fname: '',
-    lname: '',
-    age: null
-  };
-
-  greeting: string = '';
-  responseMessage: string = '';
-
-  constructor(private http: HttpClient) {}
-
-  ngOnInit(): void {
-    const hour = new Date().getHours();
-    if (hour < 12) this.greeting = "Good Morning!";
-    else if (hour < 17) this.greeting = "Good Afternoon!";
-    else this.greeting = "Good Evening!";
-  }
-
-  registerStudent() {
-    this.http.post('https://jsonplaceholder.typicode.com/posts', this.student)
-      .subscribe({
-        next: () => this.responseMessage = "Student Registered Successfully!",
-        error: () => this.responseMessage = "Something went wrong!"
+            // AJAX request
+            $http.post('/submit', $scope.student).then(
+              res => console.log('Success:', res.data),
+              err => console.error('Error:', err)
+            );
+          }
+        };
       });
-  }
-}
+  </script>
 
-  
+</body>
+</html>
