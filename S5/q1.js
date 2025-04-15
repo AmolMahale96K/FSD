@@ -1,47 +1,42 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Upload Form</title>
+  <title>Upload File</title>
 </head>
 <body>
   <h1>Upload a File</h1>
   <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="myfile" />
+    <input type="file" name="myfile" required>
     <br><br>
-    <input type="submit" value="Upload" />
+    <input type="submit" value="Upload">
   </form>
 </body>
 </html>
 
 
-
-const http = require('http');
-const fs = require('fs');
+// server.js
+const express = require('express');
+const multer = require('multer');
 const path = require('path');
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    // Serve index.html
-    const filePath = path.join(__dirname, 'index.html');
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server error');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
-      }
-    });
-  } else if (req.method === 'POST' && req.url === '/upload') {
-    // For now, just respond that the file was "received"
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('File upload received (processing not implemented)');
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
-  }
+const app = express();
+const PORT = 3000;
+
+// Serve HTML form
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-server.listen(3000, () => {
-  console.log('Server is running at http://localhost:3000');
+// Multer setup
+const upload = multer({ dest: 'uploads/' }); // files go to 'uploads/' folder
+
+// Handle file upload
+app.post('/upload', upload.single('myfile'), (req, res) => {
+  res.send('File uploaded successfully!');
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
