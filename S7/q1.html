@@ -1,26 +1,21 @@
-<div style="text-align:center; margin-top: 20px;">
-    <h1>Current Date and Time:</h1>
-    <p>{{ currentDateTime }}</p>
-  </div>
+<html ng-app="timeApp">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="TimeController">
 
-  
+  <h2>Current Date & Time:</h2>
+  <p>{{ currentTime }}</p>
 
-  import { Component, OnInit } from '@angular/core';
-import { interval } from 'rxjs';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent implements OnInit {
-  currentDateTime: string = '';
-
-  ngOnInit() {
-    // Update the current date and time every second
-    interval(1000).subscribe(() => {
-      const now = new Date();
-      this.currentDateTime = now.toLocaleString(); // Format it in a readable way
+  <script>
+    angular.module('timeApp', []).controller('TimeController', function($scope, $interval) {
+      function updateTime() {
+        $scope.currentTime = new Date().toLocaleString();
+      }
+      updateTime();
+      $interval(updateTime, 1000);
     });
-  }
-}
+  </script>
+
+</body>
+</html>
