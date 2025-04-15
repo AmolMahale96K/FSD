@@ -1,53 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Form</title>
+</head>
+<body>
+  <h1>Upload a File</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="myfile" />
+    <br><br>
+    <input type="submit" value="Upload" />
+  </form>
+</body>
+</html>
+
+
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/' && req.method === 'GET') {
-    // Serve the HTML form
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(`
-      <h2>File Upload Form</h2>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="myfile" /><br><br>
-        <input type="submit" value="Upload File" />
-      </form>
-    `);
-  } else if (req.url === '/upload' && req.method === 'POST') {
-    // Basic file upload handling using 'fs' and 'formidable'
-    const formidable = require('formidable');
-    const form = new formidable.IncomingForm();
-    form.uploadDir = path.join(__dirname, 'uploads');
-    form.keepExtensions = true;
-
-    if (!fs.existsSync(form.uploadDir)) {
-      fs.mkdirSync(form.uploadDir);
-    }
-
-    form.parse(req, (err, fields, files) => {
+  if (req.method === 'GET' && req.url === '/') {
+    // Serve index.html
+    const filePath = path.join(__dirname, 'index.html');
+    fs.readFile(filePath, (err, data) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
-        return res.end('File upload failed');
-      }
-
-      const oldPath = files.myfile.filepath;
-      const newPath = path.join(form.uploadDir, files.myfile.originalFilename);
-
-      fs.rename(oldPath, newPath, () => {
+        res.end('Server error');
+      } else {
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`<h3>File uploaded successfully!</h3>`);
-      });
+        res.end(data);
+      }
     });
+  } else if (req.method === 'POST' && req.url === '/upload') {
+    // For now, just respond that the file was "received"
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('File upload received (processing not implemented)');
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('404 Not Found');
+    res.end('Not Found');
   }
 });
 
-const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
 });
-
-
-// npm install formidable
