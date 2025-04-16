@@ -1,56 +1,34 @@
 const mysql = require('mysql2');
 
-// Create a connection to the MySQL server
 const connection = mysql.createConnection({
-  host: 'localhost', // MySQL host (localhost)
-  user: 'root', // MySQL username
-  password: 'your_mysql_password' // MySQL password (replace with your actual password)
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  port: 3306
 });
 
-// Connect to the MySQL server
 connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL:', err.stack);
-    return;
-  }
-  console.log('Connected to MySQL as id ' + connection.threadId);
-  
-  // Create the college database
-  const createDatabaseQuery = 'CREATE DATABASE IF NOT EXISTS college';
-  
-  connection.query(createDatabaseQuery, (err, result) => {
-    if (err) {
-      console.error('Error creating database:', err);
-      return;
-    }
-    console.log('Database "college" created or already exists');
-    
-    // Use the college database
-    connection.changeUser({ database: 'college' }, (err) => {
-      if (err) {
-        console.error('Error selecting database:', err);
-        return;
-      }
+  if (err) throw err;
+  console.log('Connected');
 
-      // Create the students table
-      const createTableQuery = `
+  connection.query('CREATE DATABASE IF NOT EXISTS college', (err) => {
+    if (err) throw err;
+
+    connection.changeUser({ database: 'college' }, (err) => {
+      if (err) throw err;
+
+      const sql = `
         CREATE TABLE IF NOT EXISTS students (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          first_name VARCHAR(100) NOT NULL,
-          last_name VARCHAR(100) NOT NULL,
+          name VARCHAR(100),
           age INT,
-          course VARCHAR(100)
+          department VARCHAR(50)
         )
       `;
 
-      connection.query(createTableQuery, (err, result) => {
-        if (err) {
-          console.error('Error creating table:', err);
-          return;
-        }
-        console.log('Table "students" created or already exists');
-        
-        // Close the connection
+      connection.query(sql, (err) => {
+        if (err) throw err;
+        console.log('students table ready');
         connection.end();
       });
     });
