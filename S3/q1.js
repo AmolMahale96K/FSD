@@ -1,38 +1,56 @@
-npm install express path body-parser
-
-// server.js
 const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
+const mysql = require('mysql2');
 
 const app = express();
-const PORT = 3000;
+app.use(express.urlencoded({ extended: true }));
 
-// Hardcoded credentials for demo
-const USER = {
-  email: 'user@example.com',
-  password: '123456'
-};
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve login form
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// MySQL connection
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'testdb'
 });
 
-// Login handler
+db.connect((err) => {
+  // if (err) throw err;
+  console.log('MySQL Connected...');
+});
+
+
+// Register
+app.post('/register', (req, res) => {
+  const { username, password } = req.body;
+  db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], (err) => {
+    if (err)
+       return res.send('<h3 style="color:red;">❌ Error while registering user!</h3>');
+    res.send('<h3 style="color:green;">✅ Registered successfully!</h3>');
+  });
+});
+
+// Login
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  if (email === USER.email && password === USER.password) {
-    res.send(`<h3>Login Successful</h3><p>Welcome, ${email}!</p>`);
-  } else {
-    res.send('<h3>Login Failed</h3><p>Invalid email or password.</p>');
-  }
+  const { username, password } = req.body;
+  db.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, results) => {
+    if (err)
+       return res.send('<h3 style="color:red;">❌ Login error!</h3>');
+    if (results.length > 0) {
+      res.send('<h3 style="color:green;">✅ Login successful!</h3>');
+    } else {
+      res.send('<h3 style="color:red;">❌ Invalid credentials!</h3>');
+    }
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+// Start server
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
 });
+
+
+
+
+
+// Create table if not exists
+
+  
