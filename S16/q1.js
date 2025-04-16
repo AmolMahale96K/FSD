@@ -1,92 +1,76 @@
+CREATE DATABASE IF NOT EXISTS recipe_book;
+
+USE recipe_book;
+
+CREATE TABLE IF NOT EXISTS recipes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255),
+  ingredients TEXT,
+  instructions TEXT
+);
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Recipe</title>
+</head>
+<body>
+  <h2>Add a Recipe</h2>
+  <form action="http://localhost:3000/add-recipe" method="POST">
+    <label>Title:</label>
+    <input type="text" name="title" required><br><br>
+
+    <label>Ingredients:</label><br>
+    <textarea name="ingredients" rows="4" cols="50" required></textarea><br><br>
+
+    <label>Instructions:</label><br>
+    <textarea name="instructions" rows="4" cols="50" required></textarea><br><br>
+
+    <button type="submit">Add Recipe</button>
+  </form>
+</body>
+</html>
+
+
+
 const express = require('express');
-const bodyParser = require('body-parser');
+const mysql = require('mysql2');
+const path = require('path');
 
-// Create an Express app
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 
-// Middleware to parse request body
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Predefined object to store recipes
-let recipes = [
-  {
-    title: 'Pasta',
-    ingredients: 'Pasta, Tomato Sauce, Olive Oil, Salt',
-    instructions: 'Boil pasta. Heat sauce. Mix together.',
-  },
-  {
-    title: 'Salad',
-    ingredients: 'Lettuce, Tomato, Cucumber, Dressing',
-    instructions: 'Chop veggies. Mix with dressing.',
-  }
-];
-
-// Route to view all recipes
-app.get('/recipes', (req, res) => {
-  let recipeList = '<h1>Recipe Book</h1>';
-  
-  if (recipes.length > 0) {
-    recipes.forEach((recipe) => {
-      recipeList += `
-        <h3>${recipe.title}</h3>
-        <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-        <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-        <hr>
-      `;
-    });
-  } else {
-    recipeList += '<p>No recipes available.</p>';
-  }
-  
-  res.send(recipeList);
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'recipe_book',
+  port: 3306
 });
 
-// Route to add a new recipe
+db.connect(() => {
+  console.log('MySQL Connected');
+});
+
 app.post('/add-recipe', (req, res) => {
   const { title, ingredients, instructions } = req.body;
-  
-  if (!title || !ingredients || !instructions) {
-    return res.status(400).send('All fields are required');
-  }
-  
-  const newRecipe = { title, ingredients, instructions };
-  
-  // Push new recipe into the predefined recipes array
-  recipes.push(newRecipe);
-  
-  res.send('Recipe added successfully! <a href="/recipes">View Recipes</a>');
+  db.query(
+    'INSERT INTO recipes (title, ingredients, instructions) VALUES (?, ?, ?)',
+    [title, ingredients, instructions],
+    () => {
+      res.send('<h2>✅ Recipe Added Successfully</h2>');
+    }
+  );
 });
 
-// Route to show the form for adding recipes
-app.get('/', (req, res) => {
-  res.send(`
-    <html>
-      <head>
-        <title>Recipe Book</title>
-      </head>
-      <body>
-        <h1>Recipe Book</h1>
-        <h2>Add New Recipe</h2>
-        <form action="/add-recipe" method="POST">
-          <label for="title">Recipe Title:</label>
-          <input type="text" id="title" name="title" required><br><br>
-          
-          <label for="ingredients">Ingredients:</label>
-          <textarea id="ingredients" name="ingredients" required></textarea><br><br>
-          
-          <label for="instructions">Instructions:</label>
-          <textarea id="instructions" name="instructions" required></textarea><br><br>
-          
-          <button type="submit">Add Recipe</button>
-        </form>
-        <br><br>
-        <a href="/recipes">View All Recipes</a>
-      </body>
-    </html>
-  `);
+app.get('/recipes', (req, res) => {
+  db.query('SELECT * FROM recipes', (err, results) => {
+    res.send(results);
+  });
 });
 
-// Start the server
 app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+  console.log('Server running at http://localhost:3000');
 });
